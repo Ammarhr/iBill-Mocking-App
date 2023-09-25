@@ -2,69 +2,50 @@
 
 const express = require('express');
 const { faker } = require('@faker-js/faker');
+const { getRangeDate, formatDate } = require('../helper/dateFormmatting');
 
 const router = express.Router();
 router.post('/daily-data-usage', getDailyDataUsage);
 
-function getDatesInDateRange(startDate, endDate) {
-    const dateArray = [];
-    let currentDate = new Date(startDate);
-
-    while (currentDate <= endDate) {
-        dateArray.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    return dateArray;
-}
-
-// Define your date range
-const startDate = new Date('2023-01-01');
-const endDate = new Date('2023-01-30'); // Adjust this to your desired end date
-
-// Get all the days in the date range
-const allDaysInRange = getDatesInDateRange(startDate, endDate);
-
-// Format and print the dates
-const formattedDates = allDaysInRange.map((date) => date.toISOString().slice(0, 10)); // yyyy-mm-dd
-// console.log(formattedDates, "formattedDates");
-
-
-//date formatting
-function formatDate(date) {
-    const months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-
-    const month = months[date.getMonth()];
-    const day = date.getDate();
-
-    return `${month} ${day}`;
-}
-1
 // create array of usge days
-function dailyUsageCreateHelper(days) {
+function dailyUsageCreateHelper(days, dtoun, dtouf, sdt, edt) {
     let usageArr = [];
-
+    let formattedDates = getRangeDate(edt, sdt);
     for (let i = 0; i < days; i++) {
+
+        let type = "";
+
+        if (dtoun == "x") {
+            type = "dtoun";
+        } else if (dtouf == "x") {
+            type = "dtouf";
+        } else if (dtoun == "x" && dtouf == "x") {
+            if (i % 2 == 0) {
+                type = "dtoun";
+            } else {
+                type = "dtouf";
+            }
+        } else {
+            type = "kw";
+        }
+
         let dayUsage =
         {
-            Perioddate: formatDate(new Date(formattedDates[i])),
             FullDate: formattedDates[i],
+            Perioddate: formatDate(new Date(formattedDates[i])),
             Temperature: Math.floor(Math.random() * (90 - -20) + -20).toString(),
             UOM: "kw",
             Usage: Math.floor(Math.random() * (10000 - 0) + 0).toString(),
             status: "A",
             CloudIcon: "",
-            Dtype: "kw",
+            Dtype: type,
             ToolTipEstimated: ""
         };
         usageArr.push(dayUsage);
     }
 
     let usageDataObj = {
-        "DailyUsage": {
+        DailyUsage: {
             AVGTemp: "80",
             AVGCost: "6",
             FooterDisclaimer: "<p>The data on this graph is represented for informational purposes</p>\n",
@@ -80,7 +61,10 @@ function dailyUsageCreateHelper(days) {
 
 function getDailyDataUsage(req, res) {
 
-    res.status(200).json(dailyUsageCreateHelper(30));
+    const { sdt, edt, dtoun, dtouf } = req.body;
+    let jsonResponse = dailyUsageCreateHelper(30, dtoun, dtouf, sdt, edt);
+
+    res.status(201).json(jsonResponse);
 }
 
 

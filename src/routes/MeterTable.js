@@ -6,11 +6,9 @@ const { faker } = require('@faker-js/faker');
 const router = express.Router();
 router.post('/meter-table', getMeterTable);
 
-let meterReadStatus = ["Demand", "Demand_Off", "Demand_On", "On_Peak", "Off_Peak", "On_Off_Peak", "Received", "Delivered", "Normal"]
+let meterReadStatus = ["Demand", "Normal", "Demand_Off", "Demand_On", "On_Peak", "Off_Peak", "On_Off_Peak", "Received", "Delivered", "Normal"]
 let services = ["Gas", "Electric", "Gas", "Electric", "Gas", "Electric", "Gas", "Electric", "Gas", "Electric",]
 let arrayOfMeters = [];
-
-
 
 function createMeterTableArray() {
     let numsOfMeters = Math.floor(Math.random() * (90 - 1) + 1);
@@ -31,9 +29,6 @@ function createMeterTableArray() {
             day: 'numeric',
         });
 
-        console.log('Start Date:', startDate.toLocaleDateString('en-US'));
-        console.log('End Date:', formattedEndDate);
-
         // Random meter status
         let randomReadStatus = Math.floor(Math.random() * (7 - 0) + 0)
 
@@ -44,7 +39,7 @@ function createMeterTableArray() {
             DAP_kw = meterReadStatus[randomReadStatus] == "Demand" || meterReadStatus[randomReadStatus] == "Demand_Off" || meterReadStatus[randomReadStatus] == "Demand_On" ? "x" : "",
             DAP_dtoun = meterReadStatus[randomReadStatus] == "On_Peak" || meterReadStatus[randomReadStatus] == "On_Off_Peak" ? "x" : "",
             DAP_dtouf = meterReadStatus[randomReadStatus] == "Off_Peak" || meterReadStatus[randomReadStatus] == "On_Off_Peak" ? "x" : "",
-            Operand = DAP_rkwh == "x" ? "YKWHRC" : meterReadStatus[randomReadStatus] == "Delivered" ? "YKWHDL" : "YKWH";
+            Operand = DAP_rkwh == "x" ? "YKWHRC" : meterReadStatus[randomReadStatus] == "Delivered" ? "YKWHDL" : "ss";
 
         // Random Service    
         let service = services[Math.ceil(Math.random() * (9 - 0) + 0)];

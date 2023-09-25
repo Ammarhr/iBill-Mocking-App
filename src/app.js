@@ -8,13 +8,15 @@ const app = express();
 const home = require("./routes/home");
 const meterTable = require("./routes/MeterTable")
 const dailyUsage = require("./routes/DailyDataUsage");
+const monthlyUsage = require("./routes/MonthlyDataUsage");
 
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
-app.use(home)
-app.use(meterTable)
-app.use(dailyUsage)
+app.use(home);
+app.use(meterTable);
+app.use(dailyUsage);
+app.use(monthlyUsage);
 
 module.exports = {
     server: app,
